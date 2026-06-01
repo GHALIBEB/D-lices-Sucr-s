@@ -24,7 +24,7 @@ export default async function ShopPage({ searchParams }: Props) {
       inStock: true,
     },
     orderBy: { createdAt: 'desc' },
-  });
+  }).catch(() => []);
 
   return (
     <div className="pt-20 pb-16 min-h-screen">

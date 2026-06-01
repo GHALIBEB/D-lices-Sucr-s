@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { getSettings } from '@/lib/settings';
+import { getSettings, defaultSettings } from '@/lib/settings';
 import { prisma } from '@/lib/prisma';
 import ProductCard from '@/components/ProductCard';
 import { Star, Truck, Clock, Award, Sparkles, Instagram } from 'lucide-react';
@@ -9,8 +9,8 @@ export const revalidate = 60;
 
 export default async function HomePage() {
   const [settings, featured] = await Promise.all([
-    getSettings(),
-    prisma.product.findMany({ where: { featured: true, inStock: true }, take: 4 }),
+    getSettings().catch(() => ({ ...defaultSettings })),
+    prisma.product.findMany({ where: { featured: true, inStock: true }, take: 4 }).catch(() => []),
   ]);
 
   const categories = [
