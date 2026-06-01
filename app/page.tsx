@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { getSettings, defaultSettings } from '@/lib/settings';
 import { prisma } from '@/lib/prisma';
 import ProductCard from '@/components/ProductCard';
+import HeroVideo from '@/components/HeroVideo';
 import { Star, Truck, Clock, Award, Sparkles, Instagram } from 'lucide-react';
 
 export const revalidate = 60;
@@ -57,15 +58,7 @@ export default async function HomePage() {
       {/* HERO */}
       <section className="relative min-h-[100svh] flex items-center justify-center overflow-hidden">
         {settings.heroVideo ? (
-          <video
-            src={settings.heroVideo}
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="absolute inset-0 w-full h-full object-cover object-center"
-            style={{ objectPosition: 'center 30%' }}
-          />
+          <HeroVideo src={settings.heroVideo} />
         ) : settings.heroImage ? (
           <Image
             src={settings.heroImage}
