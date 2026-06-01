@@ -2,31 +2,55 @@
 
 import { useRef, useEffect } from 'react';
 
-export default function HeroVideo({ src }: { src: string }) {
+interface Props {
+  src: string;
+  mobileSrc?: string;
+}
+
+export default function HeroVideo({ src, mobileSrc }: Props) {
   const ref = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const v = ref.current;
     if (!v) return;
-    // Forcer muted via la propriété DOM (contourne le bug React/iOS)
     v.muted = true;
+    v.setAttribute('muted', '');
+    v.setAttribute('playsinline', '');
+    v.setAttribute('webkit-playsinline', '');
+    v.controls = false;
     v.load();
-    const play = () => v.play().catch(() => {});
+
+    const play = () => {
+      v.play().catch(() => {});
+    };
+
     play();
-    // Relance au premier touch si iOS a bloqué
     document.addEventListener('touchstart', play, { once: true });
-    return () => document.removeEventListener('touchstart', play);
-  }, [src]);
+    document.addEventListener('click', play, { once: true });
+
+    return () => {
+      document.removeEventListener('touchstart', play);
+      document.removeEventListener('click', play);
+    };
+  }, [src, mobileSrc]);
 
   return (
     <video
       ref={ref}
-      src={src}
       loop
       playsInline
       autoPlay
       preload="auto"
+      controls={false}
+      disablePictureInPicture
       className="absolute inset-0 w-full h-full object-cover"
-    />
+      style={{ pointerEvents: 'none' }}
+    >
+      {/* Source mobile (verticale) si disponible */}
+      {mobileSrc && (
+        <source src={mobileSrc} media="(max-width: 768px)" />
+      )}
+      <source src={src} />
+    </video>
   );
 }

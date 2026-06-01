@@ -16,6 +16,7 @@ export const defaultSettings: SiteSettings = {
   logo: '',
   heroImage: '',
   heroVideo: '',
+  heroVideoMobile: '',
   badgeText: 'Fait Maison Depuis 2018',
   heroSubtitle: 'Pâtisseries artisanales livrées à domicile',
   catImageCustom: '',

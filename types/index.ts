@@ -79,6 +79,7 @@ export interface SiteSettings {
   logo: string;
   heroImage: string;
   heroVideo: string;
+  heroVideoMobile: string;
   badgeText: string;
   heroSubtitle: string;
   catImageCustom: string;

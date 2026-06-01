@@ -183,7 +183,8 @@ export default function SettingsPage() {
             </div>
           </div>
           <ImageUploadField label="Image principale hero" settingKey="heroImage" />
-          <ImageUploadField label="Vidéo hero (optionnel, max 100MB)" settingKey="heroVideo" videoOk />
+          <ImageUploadField label="Vidéo hero Desktop (paysage, max 100MB)" settingKey="heroVideo" videoOk />
+          <ImageUploadField label="Vidéo hero Mobile (vertical 9:16, max 100MB)" settingKey="heroVideoMobile" videoOk />
         </div>
         <div className="grid sm:grid-cols-2 gap-4 mt-4">
           <Field label="Badge texte" value={S('badgeText')} onChange={(v) => set('badgeText', v)} placeholder="Fait Maison Depuis 2018" />

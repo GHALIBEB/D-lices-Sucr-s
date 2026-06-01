@@ -58,7 +58,7 @@ export default async function HomePage() {
       {/* HERO */}
       <section className="relative min-h-[100svh] flex items-center justify-center overflow-hidden">
         {settings.heroVideo ? (
-          <HeroVideo src={settings.heroVideo} />
+          <HeroVideo src={settings.heroVideo} mobileSrc={settings.heroVideoMobile || undefined} />
         ) : settings.heroImage ? (
           <Image
             src={settings.heroImage}
