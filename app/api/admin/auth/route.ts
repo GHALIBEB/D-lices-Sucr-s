@@ -1,25 +1,20 @@
 export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createHash } from 'crypto';
 import { getIronSession } from 'iron-session';
 import { sessionOptions, type SessionData } from '@/lib/auth';
 import { cookies } from 'next/headers';
 import { prisma } from '@/lib/prisma';
 
-function sha256(str: string) {
-  return createHash('sha256').update(str).digest('hex');
-}
-
 export async function POST(req: NextRequest) {
   const { password } = await req.json();
-  const storedHash = process.env.ADMIN_PASSWORD_HASH;
+  const adminPassword = process.env.ADMIN_PASSWORD;
 
-  if (!storedHash) {
+  if (!adminPassword) {
     return NextResponse.json({ error: 'Non configuré' }, { status: 500 });
   }
 
-  if (sha256(password) !== storedHash) {
+  if (password !== adminPassword) {
     return NextResponse.json({ error: 'Mot de passe incorrect' }, { status: 401 });
   }
 
