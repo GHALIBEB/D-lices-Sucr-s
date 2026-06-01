@@ -30,9 +30,22 @@ export default function Navbar() {
         scrolled ? 'bg-white/95 backdrop-blur-md shadow-sm' : 'bg-transparent'
       }`}
     >
-      <nav className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-        {/* Logo */}
-        <Link href="/" className="flex items-center">
+      <nav className="max-w-6xl mx-auto px-4 h-16 flex items-center relative">
+
+        {/* Mobile gauche : hamburger */}
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="md:hidden p-2 text-gray-700 z-10"
+          aria-label="Menu"
+        >
+          {isOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+
+        {/* Logo — centré sur mobile, à gauche sur desktop */}
+        <Link
+          href="/"
+          className="absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0 md:left-auto flex items-center"
+        >
           <Image
             src="/images/logo.png"
             alt="Délices Sucrés"
@@ -44,7 +57,7 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop links */}
-        <ul className="hidden md:flex items-center gap-8">
+        <ul className="hidden md:flex items-center gap-8 ml-10">
           {links.map((l) => (
             <li key={l.href}>
               <Link
@@ -57,8 +70,8 @@ export default function Navbar() {
           ))}
         </ul>
 
-        {/* Actions */}
-        <div className="flex items-center gap-3">
+        {/* Actions — toujours à droite */}
+        <div className="flex items-center gap-2 ml-auto">
           <button
             onClick={openCart}
             className="relative p-2 text-gray-700 hover:text-primary transition-colors"
@@ -75,27 +88,18 @@ export default function Navbar() {
           <Link href="/cart" className="hidden md:block btn-primary text-sm py-2 px-5">
             Commander
           </Link>
-
-          {/* Mobile hamburger */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden p-2 text-gray-700"
-            aria-label="Menu"
-          >
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
         </div>
       </nav>
 
-      {/* Mobile menu */}
+      {/* Mobile menu déroulant */}
       {isOpen && (
-        <div className="md:hidden bg-white border-t border-gray-100 px-4 py-4 space-y-3 animate-fade-in">
+        <div className="md:hidden bg-white border-t border-gray-100 px-4 py-4 space-y-1 animate-fade-in">
           {links.map((l) => (
             <Link
               key={l.href}
               href={l.href}
               onClick={() => setIsOpen(false)}
-              className="block text-gray-700 hover:text-primary py-2 font-medium"
+              className="block text-gray-700 hover:text-primary py-3 font-medium border-b border-gray-50 text-sm"
             >
               {l.label}
             </Link>
@@ -103,7 +107,7 @@ export default function Navbar() {
           <Link
             href="/cart"
             onClick={() => setIsOpen(false)}
-            className="block btn-primary text-center text-sm"
+            className="block btn-primary text-center text-sm mt-3"
           >
             Commander
           </Link>

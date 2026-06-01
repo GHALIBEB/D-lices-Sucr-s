@@ -55,7 +55,7 @@ export default async function HomePage() {
   return (
     <>
       {/* HERO */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-[100svh] flex items-center justify-center overflow-hidden">
         {settings.heroVideo ? (
           <video
             src={settings.heroVideo}
@@ -63,37 +63,39 @@ export default async function HomePage() {
             muted
             loop
             playsInline
-            className="absolute inset-0 w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-cover object-center"
+            style={{ objectPosition: 'center 30%' }}
           />
         ) : settings.heroImage ? (
           <Image
             src={settings.heroImage}
             alt="Délice Sucré hero"
             fill
-            className="object-cover"
+            className="object-cover object-center"
+            style={{ objectPosition: 'center 30%' }}
             priority
           />
         ) : (
           <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-cream to-accent/20" />
         )}
-        <div className="absolute inset-0 bg-black/20" />
+        <div className="absolute inset-0 bg-black/30" />
 
-        <div className="relative z-10 text-center px-4 max-w-2xl mx-auto animate-fade-in">
-          <span className="inline-flex items-center gap-2 bg-white/90 text-accent px-4 py-2 rounded-full text-sm font-semibold mb-6 shadow">
-            <Star size={14} className="fill-accent text-accent" />
+        <div className="relative z-10 text-center px-5 max-w-lg mx-auto animate-fade-in">
+          <span className="inline-flex items-center gap-2 bg-white/90 text-accent px-3 py-1.5 rounded-full text-xs font-semibold mb-4 shadow">
+            <Star size={12} className="fill-accent text-accent" />
             {settings.badgeText}
           </span>
-          <h1 className="font-serif text-5xl md:text-7xl text-white mb-4 leading-tight drop-shadow-lg">
+          <h1 className="font-serif text-4xl md:text-7xl text-white mb-3 leading-tight drop-shadow-lg">
             {settings.shopName}
           </h1>
-          <p className="text-white/90 text-lg md:text-xl mb-8 drop-shadow">
+          <p className="text-white/90 text-base md:text-xl mb-7 drop-shadow leading-relaxed">
             {settings.heroSubtitle}
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/cart" className="btn-primary shadow-lg">
+          <div className="flex flex-col gap-3 max-w-xs mx-auto sm:max-w-none sm:flex-row sm:justify-center">
+            <Link href="/cart" className="btn-primary shadow-lg text-base py-3.5">
               Commander maintenant
             </Link>
-            <Link href="/shop" className="bg-white/90 text-gray-800 px-6 py-3 rounded-full font-medium hover:bg-white transition shadow-lg">
+            <Link href="/shop" className="bg-white/90 text-gray-800 px-6 py-3.5 rounded-full font-medium hover:bg-white transition shadow-lg text-base">
               Voir la Carte
             </Link>
           </div>

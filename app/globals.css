@@ -85,3 +85,24 @@
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { @apply bg-gray-300 rounded-full; }
+
+/* Mobile touch improvements */
+@media (max-width: 768px) {
+  .btn-primary, .btn-accent, .btn-outline {
+    @apply min-h-[48px] text-base;
+  }
+  .section-title {
+    @apply text-2xl;
+  }
+  .section-subtitle {
+    @apply text-base;
+  }
+}
+
+/* Prevent text overflow on small screens */
+* { word-break: break-word; }
+
+/* Safe area for notched phones */
+.fixed-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
