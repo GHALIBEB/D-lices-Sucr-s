@@ -20,6 +20,7 @@ export default function Navbar() {
   const links = [
     { href: '/', label: 'Accueil' },
     { href: '/shop', label: 'Boutique' },
+    { href: '/menu', label: 'La Carte' },
     { href: '/about', label: 'Notre Histoire' },
     { href: '/contact', label: 'Contact' },
   ];
