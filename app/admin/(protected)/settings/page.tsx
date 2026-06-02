@@ -29,8 +29,23 @@ export default function SettingsPage() {
     try {
       const res = await fetch('/api/upload', { method: 'POST', body: fd });
       const data = await res.json();
-      if (data.url) set(key, data.url);
-      else toast.error('Erreur upload');
+      if (data.url) {
+        // Mettre à jour le state ET sauvegarder immédiatement en DB
+        setSettings((prev) => {
+          const updated = { ...prev, [key]: data.url };
+          fetch('/api/admin/settings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updated),
+          });
+          return updated;
+        });
+        toast.success(`✅ ${type === 'video' ? 'Vidéo' : 'Image'} uploadée et sauvegardée !`);
+      } else {
+        toast.error(`Erreur upload: ${data.error || 'inconnue'}`);
+      }
+    } catch (e: any) {
+      toast.error(`Erreur: ${e.message}`);
     } finally {
       setUploading(null);
     }
@@ -56,26 +71,46 @@ export default function SettingsPage() {
   }
 
   function ImageUploadField({ label, settingKey, videoOk }: { label: string; settingKey: string; videoOk?: boolean }) {
+    const val = settings[settingKey] || '';
+    const isVideo = val.includes('/video/') || val.endsWith('.mp4') || val.endsWith('.mov');
+
     return (
       <div>
         <label className="label">{label}</label>
         <div className="flex gap-3 items-start">
-          {settings[settingKey] && (
-            <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
-              <Image src={settings[settingKey]} alt="" fill className="object-cover" />
+          {/* Aperçu */}
+          {val && (
+            <div className="relative w-20 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100 flex items-center justify-center">
+              {isVideo ? (
+                <video src={val} className="w-full h-full object-cover" muted playsInline />
+              ) : (
+                <Image src={val} alt="" fill className="object-cover" />
+              )}
+              <span className="absolute bottom-0 right-0 bg-green-500 text-white text-[9px] px-1 rounded-tl">
+                {isVideo ? '🎬' : '🖼️'}
+              </span>
             </div>
           )}
-          <label className="flex-1 border-2 border-dashed border-gray-300 rounded-xl p-3 flex items-center gap-2 cursor-pointer hover:border-primary transition text-sm text-gray-500">
+
+          <label className={`flex-1 border-2 border-dashed rounded-xl p-3 flex items-center gap-2 cursor-pointer transition text-sm ${
+            uploading === settingKey ? 'border-primary bg-primary/5' : 'border-gray-300 hover:border-primary text-gray-500'
+          }`}>
             {uploading === settingKey ? (
-              <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              <>
+                <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin flex-shrink-0" />
+                <span className="text-primary font-medium">Upload en cours...</span>
+              </>
             ) : (
-              <Upload size={16} />
+              <>
+                <Upload size={16} className="flex-shrink-0" />
+                <span>{val ? 'Changer' : `Choisir ${videoOk ? 'image ou vidéo' : 'une image'}`}</span>
+              </>
             )}
-            <span>Choisir {videoOk ? 'image ou vidéo' : 'une image'}</span>
             <input
               type="file"
               accept={videoOk ? 'image/*,video/*' : 'image/*'}
               className="hidden"
+              disabled={!!uploading}
               onChange={(e) => {
                 const file = e.target.files?.[0];
                 if (!file) return;
