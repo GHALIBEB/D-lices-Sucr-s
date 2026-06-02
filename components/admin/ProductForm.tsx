@@ -50,14 +50,21 @@ export default function ProductForm({ product }: Props) {
 
   async function uploadImage(file: File) {
     setUploading(true);
-    const fd = new FormData();
-    fd.append('file', file);
-    fd.append('type', 'image');
     try {
-      const res = await fetch('/api/upload', { method: 'POST', body: fd });
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('upload_preset', 'delice');
+      fd.append('folder', 'delice_sucre');
+
+      const res = await fetch(
+        'https://api.cloudinary.com/v1_1/dspvlrphl/image/upload',
+        { method: 'POST', body: fd }
+      );
       const data = await res.json();
-      if (data.url) setImages((prev) => [...prev, data.url]);
-      else toast.error('Erreur upload');
+      if (data.secure_url) setImages((prev) => [...prev, data.secure_url]);
+      else toast.error(`Erreur: ${data.error?.message || 'upload échoué'}`);
+    } catch (e: any) {
+      toast.error(`Erreur: ${e.message}`);
     } finally {
       setUploading(false);
     }

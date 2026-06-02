@@ -23,16 +23,26 @@ export default function SettingsPage() {
 
   async function uploadFile(key: string, file: File, type: 'image' | 'video' = 'image') {
     setUploading(key);
-    const fd = new FormData();
-    fd.append('file', file);
-    fd.append('type', type);
     try {
-      const res = await fetch('/api/upload', { method: 'POST', body: fd });
+      // Upload direct vers Cloudinary (contourne la limite 4.5MB de Vercel)
+      const cloudName = 'dspvlrphl';
+      const preset = 'delice';
+      const resourceType = type === 'video' ? 'video' : 'image';
+
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('upload_preset', preset);
+      fd.append('folder', 'delice_sucre');
+
+      const res = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`,
+        { method: 'POST', body: fd }
+      );
       const data = await res.json();
-      if (data.url) {
-        // Mettre à jour le state ET sauvegarder immédiatement en DB
+
+      if (data.secure_url) {
         setSettings((prev) => {
-          const updated = { ...prev, [key]: data.url };
+          const updated = { ...prev, [key]: data.secure_url };
           fetch('/api/admin/settings', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -40,9 +50,9 @@ export default function SettingsPage() {
           });
           return updated;
         });
-        toast.success(`✅ ${type === 'video' ? 'Vidéo' : 'Image'} uploadée et sauvegardée !`);
+        toast.success(`✅ ${type === 'video' ? 'Vidéo' : 'Image'} sauvegardée !`);
       } else {
-        toast.error(`Erreur upload: ${data.error || 'inconnue'}`);
+        toast.error(`Erreur Cloudinary: ${data.error?.message || 'inconnue'}`);
       }
     } catch (e: any) {
       toast.error(`Erreur: ${e.message}`);
