@@ -1,20 +1,32 @@
 'use client';
 
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 
 interface Props {
   src: string;
   mobileSrc?: string;
 }
 
-export default function HeroVideo({ src, mobileSrc }: Props) {
+export default function HeroVideo({ src: defaultSrc, mobileSrc: defaultMobileSrc }: Props) {
   const ref = useRef<HTMLVideoElement>(null);
+  const [src, setSrc] = useState(defaultSrc);
+  const [mobileSrc, setMobileSrc] = useState(defaultMobileSrc);
+
+  // Relit les settings depuis l'API pour avoir la dernière version
+  useEffect(() => {
+    fetch('/api/settings')
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.heroVideo) setSrc(data.heroVideo);
+        if (data.heroVideoMobile) setMobileSrc(data.heroVideoMobile);
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     const v = ref.current;
-    if (!v) return;
+    if (!v || !src) return;
 
-    // Choisir la bonne source selon la taille d'écran
     const isMobile = window.innerWidth < 768;
     const videoSrc = (isMobile && mobileSrc) ? mobileSrc : src;
 
@@ -29,7 +41,6 @@ export default function HeroVideo({ src, mobileSrc }: Props) {
     const play = () => v.play().catch(() => {});
     play();
     document.addEventListener('touchstart', play, { once: true });
-
     return () => document.removeEventListener('touchstart', play);
   }, [src, mobileSrc]);
 
