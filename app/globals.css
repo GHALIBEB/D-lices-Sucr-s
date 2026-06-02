@@ -7,102 +7,117 @@
 :root {
   --color-primary: 139 99 64;
   --color-accent: 90 62 35;
-  --logo-size: 56px;
+  --logo-size: 64px;
 }
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
   body {
     @apply bg-cream font-sans text-gray-800;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
-
   h1, h2, h3, h4 {
     @apply font-serif;
+  }
+  * {
+    @apply transition-colors duration-150;
   }
 }
 
 @layer components {
   .btn-primary {
     @apply bg-primary text-white px-6 py-3 rounded-full font-medium
-           transition-all duration-200 hover:opacity-90 hover:shadow-lg
-           active:scale-95;
+           transition-all duration-300 hover:opacity-90 hover:shadow-lg hover:-translate-y-0.5
+           active:scale-95 active:translate-y-0;
   }
-
   .btn-accent {
     @apply bg-accent text-white px-6 py-3 rounded-full font-medium
-           transition-all duration-200 hover:opacity-90 hover:shadow-lg
+           transition-all duration-300 hover:opacity-90 hover:shadow-lg hover:-translate-y-0.5
            active:scale-95;
   }
-
   .btn-outline {
     @apply border-2 border-primary text-primary px-6 py-3 rounded-full
-           font-medium transition-all duration-200 hover:bg-primary
-           hover:text-white active:scale-95;
+           font-medium transition-all duration-300 hover:bg-primary
+           hover:text-white hover:-translate-y-0.5 active:scale-95;
   }
-
   .card {
     @apply bg-white rounded-2xl overflow-hidden shadow-sm
-           hover:shadow-md transition-shadow duration-200;
+           hover:shadow-xl transition-all duration-300 hover:-translate-y-1;
   }
-
   .badge {
-    @apply inline-flex items-center gap-1 text-xs font-medium
-           px-2.5 py-1 rounded-full;
+    @apply inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full;
   }
-
   .section-title {
     @apply font-serif text-3xl md:text-4xl text-gray-900 mb-2;
   }
-
   .section-subtitle {
     @apply text-gray-500 text-lg;
   }
-
   .input {
     @apply w-full px-4 py-3 rounded-xl border border-gray-200
            focus:outline-none focus:ring-2 focus:ring-primary/30
-           focus:border-primary transition bg-white;
+           focus:border-primary transition-all duration-200 bg-white;
   }
-
   .label {
     @apply block text-sm font-medium text-gray-700 mb-1;
   }
 }
 
-/* Cart drawer overlay */
+/* Animations fluides */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.animate-fade-in     { animation: fadeIn 0.4s ease-out both; }
+.animate-fade-in-up  { animation: fadeInUp 0.5s ease-out both; }
+.animate-slide-in    { animation: slideIn 0.3s ease-out both; }
+.animate-scale-in    { animation: scaleIn 0.3s ease-out both; }
+
+/* Décalages pour animations en cascade */
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+
+/* Cart drawer */
 .cart-overlay {
   @apply fixed inset-0 bg-black/40 z-40 backdrop-blur-sm;
 }
 
-/* Status badge colors */
-.status-pending      { @apply bg-yellow-100 text-yellow-800; }
-.status-confirmed    { @apply bg-blue-100 text-blue-800; }
+/* Status badges */
+.status-pending        { @apply bg-yellow-100 text-yellow-800; }
+.status-confirmed      { @apply bg-blue-100 text-blue-800; }
 .status-en-preparation { @apply bg-orange-100 text-orange-800; }
-.status-pret         { @apply bg-purple-100 text-purple-800; }
-.status-livre        { @apply bg-green-100 text-green-800; }
-.status-annule       { @apply bg-red-100 text-red-800; }
+.status-pret           { @apply bg-purple-100 text-purple-800; }
+.status-livre          { @apply bg-green-100 text-green-800; }
+.status-annule         { @apply bg-red-100 text-red-800; }
 
-/* Scrollbar */
-::-webkit-scrollbar { width: 6px; }
+/* Scrollbar élégante */
+::-webkit-scrollbar       { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { @apply bg-gray-300 rounded-full; }
+::-webkit-scrollbar-thumb { @apply bg-primary/30 rounded-full; }
+::-webkit-scrollbar-thumb:hover { @apply bg-primary/60; }
 
-/* Mobile touch improvements */
+/* Mobile */
 @media (max-width: 768px) {
-  .btn-primary, .btn-accent, .btn-outline {
-    @apply min-h-[48px] text-base;
-  }
-  .section-title {
-    @apply text-2xl;
-  }
-  .section-subtitle {
-    @apply text-base;
-  }
+  .btn-primary, .btn-accent, .btn-outline { @apply min-h-[48px] text-base; }
+  .section-title   { @apply text-2xl; }
+  .section-subtitle { @apply text-base; }
 }
 
-/* Prevent text overflow on small screens */
 * { word-break: break-word; }
-
-/* Safe area for notched phones */
-.fixed-bottom {
-  padding-bottom: env(safe-area-inset-bottom);
-}
