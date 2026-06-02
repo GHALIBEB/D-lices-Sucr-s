@@ -13,6 +13,12 @@ export default function HeroVideo({ src, mobileSrc }: Props) {
   useEffect(() => {
     const v = ref.current;
     if (!v) return;
+
+    // Choisir la bonne source selon la taille d'écran
+    const isMobile = window.innerWidth < 768;
+    const videoSrc = (isMobile && mobileSrc) ? mobileSrc : src;
+
+    v.src = videoSrc;
     v.muted = true;
     v.setAttribute('muted', '');
     v.setAttribute('playsinline', '');
@@ -20,18 +26,11 @@ export default function HeroVideo({ src, mobileSrc }: Props) {
     v.controls = false;
     v.load();
 
-    const play = () => {
-      v.play().catch(() => {});
-    };
-
+    const play = () => v.play().catch(() => {});
     play();
     document.addEventListener('touchstart', play, { once: true });
-    document.addEventListener('click', play, { once: true });
 
-    return () => {
-      document.removeEventListener('touchstart', play);
-      document.removeEventListener('click', play);
-    };
+    return () => document.removeEventListener('touchstart', play);
   }, [src, mobileSrc]);
 
   return (
@@ -45,12 +44,6 @@ export default function HeroVideo({ src, mobileSrc }: Props) {
       disablePictureInPicture
       className="absolute inset-0 w-full h-full object-cover"
       style={{ pointerEvents: 'none' }}
-    >
-      {/* Source mobile (verticale) si disponible */}
-      {mobileSrc && (
-        <source src={mobileSrc} media="(max-width: 768px)" />
-      )}
-      <source src={src} />
-    </video>
+    />
   );
 }
