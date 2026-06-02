@@ -18,13 +18,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Mot de passe incorrect' }, { status: 401 });
   }
 
-  const session = await getIronSession<SessionData>(cookies(), sessionOptions);
-  session.isAdmin = true;
-  await session.save();
+  try {
+    const session = await getIronSession<SessionData>(cookies(), sessionOptions);
+    session.isAdmin = true;
+    await session.save();
+  } catch (e: any) {
+    return NextResponse.json({ error: `Session error: ${e.message}` }, { status: 500 });
+  }
 
   await prisma.adminActivity.create({
     data: { action: 'login', details: 'Connexion admin' },
-  });
+  }).catch(() => {});
 
   return NextResponse.json({ ok: true });
 }

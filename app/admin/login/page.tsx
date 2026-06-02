@@ -23,7 +23,8 @@ export default function AdminLogin() {
       if (res.ok) {
         router.push('/admin/dashboard');
       } else {
-        toast.error('Mot de passe incorrect');
+        const data = await res.json().catch(() => ({}));
+        toast.error(data.error || `Erreur ${res.status}`);
       }
     } catch {
       toast.error('Erreur de connexion');
