@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { getSettings, defaultSettings } from '@/lib/settings';
 import { prisma } from '@/lib/prisma';
 import ProductCard from '@/components/ProductCard';
-import HeroVideo from '@/components/HeroVideo';
 import { Star, Truck, Clock, Award, Sparkles, Instagram } from 'lucide-react';
 
 export const revalidate = 60;
@@ -58,7 +57,24 @@ export default async function HomePage() {
       {/* HERO */}
       <section className="relative min-h-[100svh] flex items-center justify-center overflow-hidden">
         {settings.heroVideo ? (
-          <HeroVideo src={settings.heroVideo} mobileSrc={settings.heroVideoMobile || undefined} />
+          /* dangerouslySetInnerHTML contourne le bug React avec muted — force autoplay iOS */
+          <div
+            className="absolute inset-0 overflow-hidden"
+            dangerouslySetInnerHTML={{
+              __html: `
+                <video
+                  autoplay muted loop playsinline webkit-playsinline
+                  preload="auto"
+                  style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;"
+                >
+                  ${settings.heroVideoMobile
+                    ? `<source src="${settings.heroVideoMobile}" media="(max-width:767px)" type="video/mp4" />`
+                    : ''}
+                  <source src="${settings.heroVideo}" type="video/mp4" />
+                </video>
+              `,
+            }}
+          />
         ) : settings.heroImage ? (
           <Image
             src={settings.heroImage}
