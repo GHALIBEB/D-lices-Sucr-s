@@ -1,60 +1,65 @@
 'use client';
 
-import { useRef, useEffect, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
-interface Props {
-  src: string;
-  mobileSrc?: string;
-}
+interface Props { src: string; mobileSrc?: string; }
 
 export default function HeroVideo({ src: defaultSrc, mobileSrc: defaultMobileSrc }: Props) {
-  const ref = useRef<HTMLVideoElement>(null);
-  const [src, setSrc] = useState(defaultSrc);
-  const [mobileSrc, setMobileSrc] = useState(defaultMobileSrc);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
-  // Relit les settings depuis l'API pour avoir la dernière version
   useEffect(() => {
+    const wrapper = wrapperRef.current;
+    if (!wrapper) return;
+
+    // Récupérer la dernière source depuis l'API
     fetch('/api/settings')
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.heroVideo) setSrc(data.heroVideo);
-        if (data.heroVideoMobile) setMobileSrc(data.heroVideoMobile);
+      .then(r => r.json())
+      .then(data => {
+        const isMobile = window.innerWidth < 768;
+        const videoSrc = (isMobile && data.heroVideoMobile)
+          ? data.heroVideoMobile
+          : (data.heroVideo || defaultSrc);
+
+        if (!videoSrc) return;
+
+        // Injecter le HTML vidéo directement — contourne le bug React/iOS avec muted
+        wrapper.innerHTML = `
+          <video
+            autoplay
+            muted
+            loop
+            playsinline
+            webkit-playsinline
+            preload="auto"
+            style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;"
+          >
+            <source src="${videoSrc}" type="video/mp4" />
+          </video>
+        `;
+
+        const v = wrapper.querySelector('video') as HTMLVideoElement;
+        if (!v) return;
+        v.muted = true;
+        v.play().catch(() => {
+          document.addEventListener('touchstart', () => v.play(), { once: true });
+        });
       })
-      .catch(() => {});
-  }, []);
+      .catch(() => {
+        // Fallback si l'API échoue
+        const isMobile = window.innerWidth < 768;
+        const videoSrc = (isMobile && defaultMobileSrc) ? defaultMobileSrc : defaultSrc;
+        if (!videoSrc) return;
 
-  useEffect(() => {
-    const v = ref.current;
-    if (!v || !src) return;
+        wrapper.innerHTML = `
+          <video autoplay muted loop playsinline webkit-playsinline preload="auto"
+            style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;">
+            <source src="${videoSrc}" type="video/mp4" />
+          </video>
+        `;
+        const v = wrapper.querySelector('video') as HTMLVideoElement;
+        if (v) { v.muted = true; v.play().catch(() => {}); }
+      });
+  }, [defaultSrc, defaultMobileSrc]);
 
-    const isMobile = window.innerWidth < 768;
-    const videoSrc = (isMobile && mobileSrc) ? mobileSrc : src;
-
-    v.src = videoSrc;
-    v.muted = true;
-    v.setAttribute('muted', '');
-    v.setAttribute('playsinline', '');
-    v.setAttribute('webkit-playsinline', '');
-    v.controls = false;
-    v.load();
-
-    const play = () => v.play().catch(() => {});
-    play();
-    document.addEventListener('touchstart', play, { once: true });
-    return () => document.removeEventListener('touchstart', play);
-  }, [src, mobileSrc]);
-
-  return (
-    <video
-      ref={ref}
-      loop
-      playsInline
-      autoPlay
-      preload="auto"
-      controls={false}
-      disablePictureInPicture
-      className="absolute inset-0 w-full h-full object-cover"
-      style={{ pointerEvents: 'none' }}
-    />
-  );
+  return <div ref={wrapperRef} className="absolute inset-0 overflow-hidden" />;
 }
