@@ -35,7 +35,7 @@ export default function Navbar() {
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         scrolled
           ? 'bg-white/96 backdrop-blur-lg shadow-md'
-          : 'bg-black/30 backdrop-blur-sm md:bg-transparent md:backdrop-blur-none'
+          : 'bg-white/95 backdrop-blur-md shadow-sm md:bg-black/20 md:backdrop-blur-sm md:shadow-none'
       }`}
     >
       <nav className="max-w-7xl mx-auto px-6 h-20 flex items-center relative">
@@ -57,8 +57,8 @@ export default function Navbar() {
           </div>
           {/* Nom de la boutique — visible uniquement sur desktop */}
           <div className="hidden lg:block">
-            <p className="font-serif text-lg leading-tight text-gray-900">Délices Sucrés</p>
-            <p className="text-xs text-primary/80 font-medium tracking-wide">Pâtisserie Artisanale</p>
+            <p className="font-serif text-lg leading-tight text-gray-900 group-hover:text-primary transition-colors">Délices Sucrés</p>
+            <p className="text-xs text-primary font-medium tracking-wide">Pâtisserie Artisanale</p>
           </div>
         </Link>
 
@@ -71,7 +71,7 @@ export default function Navbar() {
                 <Link
                   href={l.href}
                   className={`relative text-sm font-medium transition-colors duration-200 py-1 ${
-                    active ? 'text-primary' : scrolled ? 'text-gray-600 hover:text-primary' : 'text-white/90 hover:text-white'
+                    active ? 'text-primary' : (scrolled || true) ? 'text-gray-700 hover:text-primary' : 'text-white/90 hover:text-white'
                   }`}
                 >
                   {l.label}
@@ -88,7 +88,7 @@ export default function Navbar() {
         <div className="flex items-center gap-3 ml-auto">
           <button
             onClick={openCart}
-            className={`relative p-2 transition-colors duration-200 ${scrolled ? 'text-gray-600 hover:text-primary' : 'text-white hover:text-white/80'}`}
+            className="relative p-2 text-gray-700 hover:text-primary transition-colors duration-200"
             aria-label="Panier"
           >
             <ShoppingBag size={22} />
@@ -109,7 +109,7 @@ export default function Navbar() {
           {/* Hamburger mobile */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className={`md:hidden p-2 transition-colors ${scrolled ? 'text-gray-700' : 'text-white'}`}
+            className="md:hidden p-2 text-gray-700 hover:text-primary transition-colors"
             aria-label="Menu"
           >
             <div className="relative w-6 h-6">

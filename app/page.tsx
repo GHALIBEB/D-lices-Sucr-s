@@ -57,21 +57,28 @@ export default async function HomePage() {
       {/* HERO */}
       <section className="relative min-h-[100svh] flex items-center justify-center overflow-hidden">
         {settings.heroVideo ? (
-          /* dangerouslySetInnerHTML contourne le bug React avec muted — force autoplay iOS */
           <div
             className="absolute inset-0 overflow-hidden"
             dangerouslySetInnerHTML={{
               __html: `
                 <video
+                  id="hero-video"
                   autoplay muted loop playsinline webkit-playsinline
                   preload="auto"
+                  src="${settings.heroVideo}"
                   style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;"
-                >
-                  ${settings.heroVideoMobile
-                    ? `<source src="${settings.heroVideoMobile}" media="(max-width:767px)" type="video/mp4" />`
-                    : ''}
-                  <source src="${settings.heroVideo}" type="video/mp4" />
-                </video>
+                ></video>
+                ${settings.heroVideoMobile ? `
+                <script>
+                  (function(){
+                    var v = document.getElementById('hero-video');
+                    if(window.innerWidth < 768) {
+                      v.src = '${settings.heroVideoMobile}';
+                      v.load();
+                    }
+                    v.play().catch(function(){});
+                  })();
+                </script>` : ''}
               `,
             }}
           />
